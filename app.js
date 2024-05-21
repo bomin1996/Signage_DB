@@ -21,6 +21,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
+// 에러 처리 미들웨어
+app.use(function(err, req, res, next) {
+    console.error(err.stack);
+    res.status(500).json({ error: 'Something went wrong!', details: err.message });
+});
+
 // 연결 테스트용 간단한 쿼리
 db.query('SELECT 1 + 1 AS solution', (err, results, fields) => {
     if (err) throw err;
