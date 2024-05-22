@@ -6,6 +6,7 @@ const db = require('./db');  // 데이터베이스 연결 추가
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
+const authRouter = require('./routes/auth');
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/auth', authRouter);
 
 // 에러 처리 미들웨어
 app.use(function(err, req, res, next) {
