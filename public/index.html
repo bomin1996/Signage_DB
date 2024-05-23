@@ -1,13 +1,41 @@
-<html>
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <title>Express</title>
-  <link rel="stylesheet" href="/stylesheets/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Upload</title>
 </head>
-
 <body>
-  <h1>Express</h1>
-  <p>Welcome to Express</p>
-</body>
+<h1>Upload an Image</h1>
+<form id="uploadForm" enctype="multipart/form-data">
+  <input type="file" name="image" id="imageInput">
+  <button type="submit">Upload</button>
+</form>
+<div id="uploadedImage"></div>
 
+<script>
+  document.getElementById('uploadForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const formData = new FormData();
+    const imageInput = document.getElementById('imageInput');
+    formData.append('image', imageInput.files[0]);
+
+    const response = await fetch('/uploads/upload', {
+      method: 'POST',
+      body: formData
+    });
+
+    const result = await response.json();
+    if (response.ok) {
+      const img = document.createElement('img');
+      img.src = result.filePath;
+      img.alt = 'Uploaded Image';
+      document.getElementById('uploadedImage').innerHTML = '';
+      document.getElementById('uploadedImage').appendChild(img);
+    } else {
+      alert(result.error);
+    }
+  });
+</script>
+</body>
 </html>

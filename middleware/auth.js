@@ -1,21 +1,16 @@
 const jwt = require('jsonwebtoken');
-const secretKey = 'your_secret_key'; // 이 키는 환경 변수로 관리하는 것이 좋습니다.
 
-const authenticateToken = (req, res, next) => {
+function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
-    if (!token) {
-        return res.status(401).json({ error: 'Access denied' });
-    }
+    if (token == null) return res.sendStatus(401);
 
-    jwt.verify(token, secretKey, (err, user) => {
-        if (err) {
-            return res.status(403).json({ error: 'Invalid token' });
-        }
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+        if (err) return res.sendStatus(403);
         req.user = user;
         next();
     });
-};
+}
 
 module.exports = authenticateToken;
