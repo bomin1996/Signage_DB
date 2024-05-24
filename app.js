@@ -31,12 +31,6 @@ app.use(function(err, req, res, next) {
     res.status(500).json({ error: 'Something went wrong!', details: err.message });
 });
 
-// 연결 테스트용 간단한 쿼리
-db.query('SELECT 1 + 1 AS solution', (err, results, fields) => {
-    if (err) throw err;
-    console.log('The solution is: ', results[0].solution);
-});
-
 // 포트 번호 설정
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
