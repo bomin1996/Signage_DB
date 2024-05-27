@@ -1,19 +1,18 @@
-const mysql = require('mysql2');
-require('dotenv').config();
+const mysql = require('mysql');
 
-const connection = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME
+const db = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: 'root',
+    database: 'DID'
 });
 
-connection.connect((err) => {
+db.connect((err) => {
     if (err) {
-        console.error('데이터베이스 연결 실패:', err.stack);
+        console.error('Error connecting to the database:', err);
         return;
     }
-    console.log('데이터베이스에 연결되었습니다. ID:', connection.threadId);
+    console.log('Connected to the database');
 });
 
-module.exports = connection;
+module.exports = db;

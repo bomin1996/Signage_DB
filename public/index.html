@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Image Upload</title>
+  <title>Signage System</title>
 </head>
 <body>
-<h1>Upload an Image</h1>
+<h1>Upload Content</h1>
 <form id="uploadForm" enctype="multipart/form-data">
   <input type="file" name="image" id="imageInput">
   <button type="submit">Upload</button>
@@ -29,7 +29,7 @@
     if (response.ok) {
       const img = document.createElement('img');
       img.src = result.filePath;
-      img.alt = 'Uploaded Image';
+      img.alt = 'Uploaded Content';
       document.getElementById('uploadedImage').innerHTML = '';
       document.getElementById('uploadedImage').appendChild(img);
     } else {

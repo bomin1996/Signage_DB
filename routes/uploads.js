@@ -29,7 +29,7 @@ router.post('/upload', upload.single('image'), (req, res) => {
 
     // 데이터베이스에 파일 정보 저장
     const query = `
-        INSERT INTO Contents (file_name, file_type, file_size, file_path) 
+        INSERT INTO Contents (file_name, file_type, file_size, file_path)
         VALUES (?, ?, ?, ?)
     `;
     db.query(query, [fileName, fileType, fileSize, filePath], (err, result) => {
