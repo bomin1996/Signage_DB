@@ -2,12 +2,13 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const db = require('./sequelize'); // Sequelize를 사용한 데이터베이스 연결
+const db = require('./sequelize');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const authRouter = require('./routes/auth');
-const uploadRouter = require('./routes/uploads'); // 업로드 라우트 추가
+const uploadRouter = require('./routes/uploads');
+const downloadRouter = require('./routes/download'); // 다운로드 라우트 추가
 
 const app = express();
 
@@ -23,7 +24,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/auth', authRouter);
-app.use('/uploads', uploadRouter); // 업로드 라우트 사용
+app.use('/uploads', uploadRouter);
+app.use('/download', downloadRouter); // 다운로드 라우트 사용
 
 // 에러 처리 미들웨어
 app.use(function(err, req, res, next) {

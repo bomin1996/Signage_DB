@@ -11,9 +11,23 @@ const storage = multer.diskStorage({
         cb(null, 'public/uploads/');
     },
     filename: function (req, file, cb) {
-        // 파일 이름에 고유 식별자를 추가하여 저장
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.originalname + '-' + uniqueSuffix);
+        const uploadPath = path.join(__dirname, '../public/uploads');
+        const originalFileName = file.originalname;
+        let fileName = originalFileName;
+
+        // 파일 이름 중복 처리
+        if (fs.existsSync(path.join(uploadPath, fileName))) {
+            const fileExt = path.extname(fileName);
+            const baseName = path.basename(fileName, fileExt);
+            let counter = 1;
+
+            while (fs.existsSync(path.join(uploadPath, fileName))) {
+                fileName = `${baseName}-${counter}${fileExt}`;
+                counter++;
+            }
+        }
+
+        cb(null, fileName);
     }
 });
 
@@ -25,18 +39,15 @@ router.post('/upload', upload.single('image'), async (req, res) => {
         return res.status(400).json({ error: 'No file uploaded' });
     }
 
-    // 원래 파일 이름과 실제 저장된 파일 이름을 구분하여 저장
-    const originalFileName = req.file.originalname;
-    const savedFileName = req.file.filename;
-    const filePath = `/uploads/${req.file.filename}`;
+    const fileName = req.file.filename;
+    const filePath = `/uploads/${fileName}`;
     const fileType = req.file.mimetype;
     const fileSize = req.file.size;
 
     try {
         // 데이터베이스에 파일 정보 저장
         const content = await db.Contents.create({
-            file_name: originalFileName,
-            saved_file_name: savedFileName,
+            file_name: fileName,
             file_type: fileType,
             file_size: fileSize,
             file_path: filePath
