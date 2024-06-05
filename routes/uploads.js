@@ -33,8 +33,11 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// 파일 업로드 엔드포인트
-router.post('/upload', upload.single('image'), async (req, res) => {
+/**
+ * 파일 업로드 엔드포인트
+ * 파일을 업로드하고 메타데이터를 DB에 저장합니다.
+ */
+router.post('/', upload.single('image'), async (req, res) => {
     if (!req.file) {
         return res.status(400).json({ error: 'No file uploaded' });
     }

@@ -8,7 +8,9 @@ const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const authRouter = require('./routes/auth');
 const uploadRouter = require('./routes/uploads');
-const downloadRouter = require('./routes/download'); // 다운로드 라우트 추가
+const contentsRouter = require('./routes/contents'); // 콘텐츠 관리 라우트 추가
+const devicesRouter = require('./routes/devices'); // 디바이스 관리 라우트 추가
+const layoutsRouter = require('./routes/layouts'); // 레이아웃 관리 라우트 추가
 
 const app = express();
 
@@ -25,7 +27,9 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/auth', authRouter);
 app.use('/uploads', uploadRouter);
-app.use('/download', downloadRouter); // 다운로드 라우트 사용
+app.use('/contents', contentsRouter); // 콘텐츠 관리 라우트 사용
+app.use('/devices', devicesRouter); // 디바이스 관리 라우트 사용
+app.use('/layouts', layoutsRouter); // 레이아웃 관리 라우트 사용
 
 // 에러 처리 미들웨어
 app.use(function(err, req, res, next) {
