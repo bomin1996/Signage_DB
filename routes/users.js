@@ -2,7 +2,27 @@ const express = require('express');
 const router = express.Router();
 const db = require('../sequelize');
 
-//사용자 목록 조회 엔드포인트 등록된 사용자의 목록을 조회합니다.
+// 새로운 사용자를 등록
+router.post('/', async (req, res) => {
+  const { group_id, user_type, name, username, password, contact } = req.body;
+
+  try {
+    const user = await db.Users.create({
+      group_id,
+      user_type,
+      name,
+      username,
+      password,
+      contact
+    });
+
+    res.status(201).json({ message: 'User created successfully', user });
+  } catch (err) {
+    res.status(500).json({ error: 'Database error', details: err.message });
+  }
+});
+
+// 등록된 사용자의 목록을 조회
 router.get('/', async (req, res) => {
   try {
     const users = await db.Users.findAll();
@@ -12,7 +32,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-//사용자 삭제 엔드포인트 특정 사용자를 삭제합니다.
+// 특정 사용자를 삭제
 router.delete('/:userId', async (req, res) => {
   const userId = req.params.userId;
 

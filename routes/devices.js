@@ -2,10 +2,27 @@ const express = require('express');
 const router = express.Router();
 const db = require('../sequelize');
 
-/**
- * 디바이스 목록 조회 엔드포인트
- * 등록된 디바이스의 목록을 조회합니다.
- */
+// 새로운 디바이스를 등록
+router.post('/', async (req, res) => {
+    const { device_id, group_name, status, os, device_name, ip_address } = req.body;
+
+    try {
+        const device = await db.Devices.create({
+            device_id,
+            group_name,
+            status,
+            os,
+            device_name,
+            ip_address
+        });
+
+        res.status(201).json({ message: 'Device created successfully', device });
+    } catch (err) {
+        res.status(500).json({ error: 'Database error', details: err.message });
+    }
+});
+
+// 등록된 디바이스의 목록을 조회
 router.get('/', async (req, res) => {
     try {
         const devices = await db.Devices.findAll();
@@ -15,10 +32,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-/**
- * 디바이스 상태 업데이트 엔드포인트
- * 디바이스의 상태를 업데이트합니다.
- */
+// 디바이스의 상태를 업데이트
 router.put('/:deviceId', async (req, res) => {
     const deviceId = req.params.deviceId;
     const { status, os, device_name, ip_address } = req.body;

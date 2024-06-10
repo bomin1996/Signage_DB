@@ -21,6 +21,7 @@ db.ContentSettings = require('./models/contentsetting')(sequelize, Sequelize);
 db.TextSettings = require('./models/textsetting')(sequelize, Sequelize);
 db.ContentPeriods = require('./models/contentperiod')(sequelize, Sequelize);
 db.LayoutApplications = require('./models/layoutapplication')(sequelize, Sequelize);
+db.Schedules = require('./models/schedule')(sequelize, Sequelize);
 
 // Define associations
 db.Users.belongsTo(db.Groups, { foreignKey: 'group_id' });
