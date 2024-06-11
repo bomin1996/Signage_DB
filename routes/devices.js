@@ -57,4 +57,23 @@ router.put('/:deviceId', async (req, res) => {
     }
 });
 
+// 특정 디바이스를 삭제
+router.delete('/:deviceId', async (req, res) => {
+    const deviceId = req.params.deviceId;
+
+    try {
+        const device = await db.Devices.findByPk(deviceId);
+
+        if (!device) {
+            return res.status(404).json({ error: 'Device not found' });
+        }
+
+        await db.Devices.destroy({ where: { device_id: deviceId } });
+
+        res.status(200).json({ message: 'Device deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ error: 'Database error', details: err.message });
+    }
+});
+
 module.exports = router;

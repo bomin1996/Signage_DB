@@ -12,6 +12,7 @@ const contentsRouter = require('./routes/contents'); // 콘텐츠 관리 라우�
 const devicesRouter = require('./routes/devices');
 const layoutsRouter = require('./routes/layouts');
 const schedulesRouter = require('./routes/schedules'); // 스케줄 관리 라우트 추가
+const groupsRouter = require('./routes/groups'); // 그룹 관리 라우트 추가
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use('/contents', contentsRouter); // 콘텐츠 관리 라우트 사용
 app.use('/devices', devicesRouter);
 app.use('/layouts', layoutsRouter);
 app.use('/schedules', schedulesRouter); // 스케줄 관리 라우트 사용
+app.use('/groups', groupsRouter); // 그룹 관리 라우트 사용
 
 // 에러 처리 미들웨어
 app.use(function(err, req, res, next) {

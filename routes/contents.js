@@ -120,4 +120,22 @@ router.get('/download/:contentId', async (req, res) => {
     }
 });
 
+// 특정 조건에 맞는 콘텐츠를 검색
+router.get('/search', async (req, res) => {
+    const { keyword } = req.query;
+
+    try {
+        const contents = await db.Contents.findAll({
+            where: {
+                file_name: {
+                    [db.Sequelize.Op.like]: `%${keyword}%`
+                }
+            }
+        });
+        res.status(200).json(contents);
+    } catch (err) {
+        res.status(500).json({ error: 'Database error', details: err.message });
+    }
+});
+
 module.exports = router;
