@@ -58,12 +58,34 @@ router.post('/upload', upload.single('image'), async (req, res) => {
         res.status(500).json({ error: 'Database error', details: err.message });
     }
 });
-
+/*
 // 업로드된 콘텐츠의 목록을 조회
 router.get('/', async (req, res) => {
     try {
         const contents = await db.Contents.findAll();
         res.status(200).json(contents);
+    } catch (err) {
+        res.status(500).json({ error: 'Database error', details: err.message });
+    }
+}); */
+
+// 페이지네이션을 사용하여 업로드된 콘텐츠의 목록을 조회
+router.get('/', async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+
+    try {
+        const { count, rows } = await db.Contents.findAndCountAll({
+            offset: (page - 1) * pageSize,
+            limit: pageSize
+        });
+
+        res.status(200).json({
+            totalItems: count,
+            totalPages: Math.ceil(count / pageSize),
+            currentPage: page,
+            contents: rows
+        });
     } catch (err) {
         res.status(500).json({ error: 'Database error', details: err.message });
     }
