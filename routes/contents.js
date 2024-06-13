@@ -70,6 +70,7 @@ router.get('/', async (req, res) => {
 }); */
 
 // 페이지네이션을 사용하여 업로드된 콘텐츠의 목록을 조회
+///contents?page=${page}&pageSize=${pageSize}
 router.get('/', async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
