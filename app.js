@@ -14,6 +14,7 @@ const layoutsRouter = require('./routes/layouts');
 const schedulesRouter = require('./routes/schedules'); // 스케줄 관리 라우트 추가
 const groupsRouter = require('./routes/groups'); // 그룹 관리 라우트 추가
 const logsRouter = require('./routes/logs'); // 로그 관리 라우트 추가
+const notificationsRouter = require('./routes/notifications'); // 알림 관리 라우트 추가
 
 const app = express();
 
@@ -36,6 +37,7 @@ app.use('/layouts', layoutsRouter);
 app.use('/schedules', schedulesRouter); // 스케줄 관리 라우트 사용
 app.use('/groups', groupsRouter); // 그룹 관리 라우트 사용
 app.use('/logs', logsRouter); // 로그 관리 라우트 사용
+app.use('/notifications', notificationsRouter); // 알림 관리 라우트 사용
 
 // 에러 처리 미들웨어
 app.use(function(err, req, res, next) {
