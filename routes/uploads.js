@@ -3,12 +3,26 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const sharp = require('sharp'); // 썸네일 생성용 라이브러리
+const ffmpeg = require('fluent-ffmpeg');
+const ffmpegInstaller = require('@ffmpeg-installer/ffmpeg');
+const ffprobeInstaller = require('@ffprobe-installer/ffprobe');
 const db = require('../sequelize');
+
+// ffmpeg 설정
+ffmpeg.setFfmpegPath(ffmpegInstaller.path);
+ffmpeg.setFfprobePath(ffprobeInstaller.path);
 
 // Multer 설정
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'public/uploads/');
+        if (file.mimetype.startsWith('image/')) {
+            cb(null, 'public/uploads/images');
+        } else if (file.mimetype.startsWith('video/')) {
+            cb(null, 'public/uploads/videos');
+        } else {
+            cb(new Error('Invalid file type'), false);
+        }
     },
     filename: function (req, file, cb) {
         const uploadPath = path.join(__dirname, '../public/uploads');
@@ -31,32 +45,109 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({
+    storage: storage,
+    fileFilter: (req, file, cb) => {
+        const filetypes = /jpeg|jpg|png|gif|mp4|mkv|avi/;
+        const mimetype = filetypes.test(file.mimetype);
+        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
 
-//파일 업로드 엔드포인트 * 파일을 업로드하고 메타데이터를 DB에 저장합니다.
+        if (mimetype && extname) {
+            return cb(null, true);
+        } else {
+            cb(new Error('Only image and video files are allowed!'));
+        }
+    },
+    limits: { fileSize: 100 * 1024 * 1024 } // 100MB 제한
+});
 
-router.post('/', upload.single('image'), async (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({ error: 'No file uploaded' });
+// 파일 업로드 및 처리
+router.post('/upload', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'video', maxCount: 1 }]), async (req, res) => {
+    const files = req.files;
+
+    if (!files.image && !files.video) {
+        return res.status(400).json({ error: 'No files uploaded or invalid file type/size' });
     }
 
-    const fileName = req.file.filename;
-    const filePath = `/uploads/${fileName}`;
-    const fileType = req.file.mimetype;
-    const fileSize = req.file.size;
+    const responses = {};
 
-    try {
-        // 데이터베이스에 파일 정보 저장
-        const content = await db.Contents.create({
-            file_name: fileName,
-            file_type: fileType,
-            file_size: fileSize,
-            file_path: filePath
-        });
+    if (files.image) {
+        const imagePath = files.image[0].path;
+        const thumbnailPath = `public/uploads/thumbnails/${path.basename(files.image[0].filename, path.extname(files.image[0].filename))}.png`;
 
-        res.status(200).json({ message: 'File uploaded successfully', filePath: filePath });
-    } catch (err) {
-        res.status(500).json({ error: 'Database error', details: err.message });
+        try {
+            // 이미지 썸네일 생성
+            await sharp(imagePath)
+                .resize(200, 200)
+                .toFile(thumbnailPath);
+
+            // 데이터베이스에 파일 정보 저장
+            const content = await db.Contents.create({
+                file_name: files.image[0].filename,
+                file_type: files.image[0].mimetype,
+                file_size: files.image[0].size,
+                file_path: imagePath
+            });
+
+            responses.image = {
+                message: 'Image uploaded and thumbnail generated successfully',
+                imagePath: imagePath,
+                thumbnailPath: thumbnailPath
+            };
+
+        } catch (err) {
+            return res.status(500).json({ error: 'Error processing image', details: err.message });
+        }
+    }
+
+    if (files.video) {
+        const videoPath = files.video[0].path;
+        const videoThumbnailPath = `public/uploads/thumbnails/${path.basename(files.video[0].filename, path.extname(files.video[0].filename))}.png`;
+
+        // 동영상 썸네일 생성
+        ffmpeg(videoPath)
+            .on('end', async function () {
+                console.log('Video screenshot taken');
+
+                // 데이터베이스에 파일 정보 저장
+                try {
+                    const content = await db.Contents.create({
+                        file_name: files.video[0].filename,
+                        file_type: files.video[0].mimetype,
+                        file_size: files.video[0].size,
+                        file_path: videoPath
+                    });
+
+                    responses.video = {
+                        message: 'Video uploaded and thumbnail generated successfully',
+                        videoPath: videoPath,
+                        thumbnailPath: videoThumbnailPath
+                    };
+
+                    if (!files.image) {
+                        return res.status(200).json(responses);
+                    } else {
+                        res.status(200).json(responses);
+                    }
+                } catch (err) {
+                    return res.status(500).json({ error: 'Database error', details: err.message });
+                }
+
+            })
+            .on('error', function (err) {
+                console.error(err);
+                return res.status(500).json({ error: 'Error generating video thumbnail', details: err.message });
+            })
+            .screenshots({
+                count: 1,
+                folder: 'public/uploads/thumbnails',
+                filename: path.basename(videoThumbnailPath),
+                size: '320x240'
+            });
+    }
+
+    if (files.image && !files.video) {
+        return res.status(200).json(responses);
     }
 });
 
