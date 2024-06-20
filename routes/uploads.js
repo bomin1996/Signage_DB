@@ -3,7 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const sharp = require('sharp'); // 썸네일 생성용 라이브러리
+const Jimp = require('jimp'); // Jimp 라이브러리
 const ffmpeg = require('fluent-ffmpeg');
 const ffmpegInstaller = require('@ffmpeg-installer/ffmpeg');
 const ffprobeInstaller = require('@ffprobe-installer/ffprobe');
@@ -77,9 +77,8 @@ router.post('/upload', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'v
 
         try {
             // 이미지 썸네일 생성
-            await sharp(imagePath)
-                .resize(200, 200)
-                .toFile(thumbnailPath);
+            const image = await Jimp.read(imagePath);
+            await image.resize(200, 200).writeAsync(thumbnailPath);
 
             // 데이터베이스에 파일 정보 저장
             const content = await db.Contents.create({
