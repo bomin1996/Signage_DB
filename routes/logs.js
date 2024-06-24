@@ -14,9 +14,9 @@ router.post('/', async (req, res) => {
             timestamp: timestamp || new Date()
         });
 
-        res.status(201).json({ message: 'Log created successfully', log });
+        res.status(201).json({ message: '로그가 성공적으로 생성되었습니다.', log });
     } catch (err) {
-        res.status(500).json({ error: 'Database error', details: err.message });
+        res.status(500).json({ error: '데이터베이스 오류가 발생했습니다.', details: err.message });
     }
 });
 
@@ -30,11 +30,11 @@ router.get('/', async (req, res) => {
             message: log.message,
             details: log.details, // 추가적인 상세 설명 필드
             timestamp: log.timestamp,
-            readableMessage: `${log.timestamp.toISOString()} [${log.level.toUpperCase()}]: ${log.message} - ${log.details || ''}`
+            readableMessage: `${log.timestamp.toISOString()} [${log.level.toUpperCase()}]: ${log.message} - ${log.details || '추가적인 설명 없음'}`
         }));
         res.status(200).json(formattedLogs);
     } catch (err) {
-        res.status(500).json({ error: 'Database error', details: err.message });
+        res.status(500).json({ error: '데이터베이스 오류가 발생했습니다.', details: err.message });
     }
 });
 
