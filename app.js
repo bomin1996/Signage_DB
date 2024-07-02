@@ -16,6 +16,7 @@ const groupsRouter = require('./routes/groups'); // 그룹 관리 라우트 추�
 const logsRouter = require('./routes/logs'); // 로그 관리 라우트 추가
 const notificationsRouter = require('./routes/notifications'); // 알림 관리 라우트 추가
 const videosRouter = require('./routes/videos'); // 동영상 업로드 라우트 추가
+const healthRouter = require('./routes/health'); // Health Check 라우트 추가
 
 const app = express();
 
@@ -40,6 +41,7 @@ app.use('/groups', groupsRouter); // 그룹 관리 라우트 사용
 app.use('/logs', logsRouter); // 로그 관리 라우트 사용
 app.use('/notifications', notificationsRouter); // 알림 관리 라우트 사용
 app.use('/videos', videosRouter); // 동영상 업로드 라우트 사용
+app.use('/health', healthRouter); // Health Check 라우트 사용
 
 // 에러 처리 미들웨어
 app.use(function(err, req, res, next) {
