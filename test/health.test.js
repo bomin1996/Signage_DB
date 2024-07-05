@@ -1,17 +1,34 @@
-import request from 'supertest';
-import app from '../app.js'; // 확장자 .js를 추가
+const request = require('supertest');
+const assert = require('assert');
+const app = require('../app'); // Express 앱 불러오기
 
 describe('Health API', () => {
-    test('GET /health should return status UP', async () => {
-        const response = await request(app).get('/health');
-        expect(response.status).toBe(200);
-        expect(response.body).toHaveProperty('status', 'UP');
+    describe('GET /health', () => {
+        it('should get a status of UP', (done) => {
+            request(app)
+                .get('/health')
+                .expect(200)
+                .end((err, res) => {
+                    if (err) return done(err);
+                    assert.strictEqual(res.body.status, 'UP');
+                    assert.ok(res.body.timestamp);
+                    done();
+                });
+        });
     });
 
-    test('GET /detailed-health should return detailed status UP', async () => {
-        const response = await request(app).get('/detailed-health');
-        expect(response.status).toBe(200);
-        expect(response.body).toHaveProperty('status', 'UP');
-        expect(response.body.services).toHaveProperty('database', 'UP');
+    describe('GET /health/detailed-health', () => {
+        it('should get a detailed status of UP', (done) => {
+            request(app)
+                .get('/health/detailed-health')
+                .expect(200)
+                .end((err, res) => {
+                    if (err) return done(err);
+                    assert.strictEqual(res.body.status, 'UP');
+                    assert.strictEqual(res.body.services.database, 'UP');
+                    assert.ok(res.body.timestamp);
+                    done();
+                });
+        });
     });
 });

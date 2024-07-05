@@ -13,16 +13,26 @@ const db = require('../sequelize');
 ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 ffmpeg.setFfprobePath(ffprobeInstaller.path);
 
+// 디렉터리 생성 함수
+function ensureDirectoryExistence(dirPath) {
+    if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, { recursive: true });
+    }
+}
+
 // Multer 설정
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
+        let uploadPath;
         if (file.mimetype.startsWith('image/')) {
-            cb(null, 'public/uploads/images');
+            uploadPath = path.join(__dirname, '../public/uploads/images');
         } else if (file.mimetype.startsWith('video/')) {
-            cb(null, 'public/uploads/videos');
+            uploadPath = path.join(__dirname, '../public/uploads/videos');
         } else {
-            cb(new Error('Invalid file type'), false);
+            return cb(new Error('Invalid file type'), false);
         }
+        ensureDirectoryExistence(uploadPath); // 디렉터리 생성
+        cb(null, uploadPath);
     },
     filename: function (req, file, cb) {
         const uploadPath = path.join(__dirname, '../public/uploads');
@@ -75,6 +85,8 @@ router.post('/upload', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'v
         const imagePath = files.image[0].path;
         const thumbnailPath = `public/uploads/thumbnails/${path.basename(files.image[0].filename, path.extname(files.image[0].filename))}.png`;
 
+        ensureDirectoryExistence(path.dirname(thumbnailPath)); // 썸네일 디렉터리 생성
+
         try {
             // 이미지 썸네일 생성
             const image = await Jimp.read(imagePath);
@@ -102,6 +114,8 @@ router.post('/upload', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'v
     if (files.video) {
         const videoPath = files.video[0].path;
         const videoThumbnailPath = `public/uploads/thumbnails/${path.basename(files.video[0].filename, path.extname(files.video[0].filename))}.png`;
+
+        ensureDirectoryExistence(path.dirname(videoThumbnailPath)); // 썸네일 디렉터리 생성
 
         // 동영상 썸네일 생성
         ffmpeg(videoPath)
