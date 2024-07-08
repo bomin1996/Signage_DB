@@ -16,6 +16,7 @@ router.post('/', async (req, res) => {
 
         res.status(201).json({ message: '로그가 성공적으로 생성되었습니다.', log });
     } catch (err) {
+        console.error('Error creating log:', err);
         res.status(500).json({ error: '데이터베이스 오류가 발생했습니다.', details: err.message });
     }
 });
@@ -34,6 +35,7 @@ router.get('/', async (req, res) => {
         }));
         res.status(200).json(formattedLogs);
     } catch (err) {
+        console.error('Error fetching logs:', err);
         res.status(500).json({ error: '데이터베이스 오류가 발생했습니다.', details: err.message });
     }
 });

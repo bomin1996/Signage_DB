@@ -22,6 +22,7 @@ db.TextSettings = require('./models/textsetting')(sequelize, Sequelize);
 db.ContentPeriods = require('./models/contentperiod')(sequelize, Sequelize);
 db.LayoutApplications = require('./models/layoutapplication')(sequelize, Sequelize);
 db.Schedules = require('./models/schedule')(sequelize, Sequelize);
+db.Logs = require('./models/log')(sequelize, Sequelize); // Logs 모델 추가
 
 // Define associations
 db.Users.belongsTo(db.Groups, { foreignKey: 'group_id' });
