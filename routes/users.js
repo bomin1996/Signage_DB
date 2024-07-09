@@ -9,6 +9,7 @@ router.post('/', async (req, res) => {
     const user = await db.Users.create({ group_id, user_type, name, username, password, contact });
     res.status(201).json({ message: 'User created successfully', user });
   } catch (err) {
+    console.error('Error creating user:', err);
     res.status(500).json({ error: 'Database error', details: err.message });
   }
 });
