@@ -5,7 +5,11 @@ const db = require('../sequelize');
 
 describe('Users API', () => {
     before(async () => {
-        await db.sequelize.sync({ force: true }); // 데이터베이스 초기화
+        // 데이터베이스 초기화
+        await db.sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
+        await db.sequelize.sync({ force: true });
+        await db.sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
+
         // 그룹 데이터 삽입 (외래 키 제약 조건 문제 해결)
         await db.Groups.create({ group_id: 1, group_name: 'Group 1' });
     });
