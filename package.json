@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node app.js",
-    "test": "mocha"
+    "test": "mocha",
+    "coverage": "nyc --reporter=html --reporter=text npm test"
   },
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
@@ -30,6 +31,17 @@
   "devDependencies": {
     "chai": "^5.1.1",
     "chai-http": "^5.0.0",
-    "mocha": "^10.6.0"
+    "mocha": "^10.6.0",
+    "nyc": "^17.0.0"
+  },
+  "nyc": {
+    "include": ["routes/**/*.js"],
+    "exclude": ["test/**/*.js"],
+    "reporter": ["html", "text"],
+    "all": true,
+    "check-coverage": true,
+    "lines": 80,
+    "functions": 80,
+    "branches": 80
   }
 }
