@@ -15,15 +15,21 @@ describe('Schedules API', function () {
         await db.Schedules.destroy({ where: {} });
         await db.Contents.destroy({ where: {} });
 
-        // 샘플 콘텐츠 생성
-        const content = await db.Contents.create({
-            file_name: 'test_image.jpg',
-            saved_file_name: 'test_image.jpg',
-            file_type: 'image/jpeg',
-            file_size: 12345,
-            file_path: '/uploads/test_image.jpg'
-        });
-        contentId = content.content_id;
+        try {
+            // 샘플 콘텐츠 생성
+            const content = await db.Contents.create({
+                file_name: 'test_image.jpg',
+                saved_file_name: 'test_image.jpg', // 저장된 파일 이름 추가
+                file_type: 'image/jpeg',
+                file_size: 12345,
+                file_path: '/uploads/test_image.jpg'
+            });
+            contentId = content.content_id;
+            console.log(`Content created with ID: ${contentId}`);
+        } catch (error) {
+            console.error('Error creating content:', error); // 디버깅을 위해 오류 출력
+            throw error; // 오류를 다시 던져서 테스트가 실패하도록 합니다.
+        }
     });
 
     // 새로운 스케줄 생성 테스트
