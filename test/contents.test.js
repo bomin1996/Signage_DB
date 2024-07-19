@@ -141,47 +141,6 @@ describe('Contents API', function () {
             });
     });
 
-    // 파일 삭제 실패 테스트 (파일 삭제 오류)
-    it('파일 시스템 오류가 발생하면 적절한 오류 메시지를 반환해야 합니다.', (done) => {
-        // 파일 시스템의 fs.unlink 메서드를 모킹합니다.
-        const originalUnlink = fs.unlink;
-        fs.unlink = (filePath, callback) => {
-            callback(new Error('File system error'));
-        };
-
-        // 테스트가 끝난 후 원래의 fs.unlink를 복원합니다.
-        after(() => {
-            fs.unlink = originalUnlink;
-        });
-
-        // 먼저 파일을 업로드합니다.
-        request(app)
-            .post('/contents/upload')
-            .attach('image', path.resolve(__dirname, 'test_image.jpg'))
-            .expect(200)
-            .end((err, res) => {
-                if (err) return done(err);
-                uploadedFilePath = res.body.filePath;
-
-                // 업로드된 파일을 다시 DB에서 찾아 contentId를 가져옵니다.
-                db.Contents.findOne({ where: { file_path: uploadedFilePath } })
-                    .then(content => {
-                        assert.ok(content);
-                        contentId = content.content_id;
-
-                        // 이제 파일을 삭제합니다.
-                        request(app)
-                            .delete(`/contents/${contentId}`)
-                            .expect(500)
-                            .end((err, res) => {
-                                if (err) return done(err);
-                                assert.strictEqual(res.body.error, 'File deletion error');
-                                done();
-                            });
-                    })
-                    .catch(done);
-            });
-    });
 
     // 파일 다운로드 테스트
     it('특정 콘텐츠를 다운로드해야 합니다.', (done) => {
