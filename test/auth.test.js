@@ -27,6 +27,8 @@ describe('Auth API', () => {
             });
     });
 
+
+
     it('should return 400 for missing credentials', (done) => {
         request(app)
             .post('/auth/login')
