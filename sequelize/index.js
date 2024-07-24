@@ -5,6 +5,7 @@ const sequelize = new Sequelize('DID', 'root', 'root', {
     dialect: 'mysql'
 });
 
+
 const db = {};
 
 db.Sequelize = Sequelize;
