@@ -13,6 +13,7 @@ router.post('/', async (req, res) => {
     }
 });
 
+
 // Get a list of groups
 router.get('/', async (req, res) => {
     try {
