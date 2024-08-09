@@ -111,7 +111,6 @@ describe('Download API', function () {
                 });
             });
         });
-
         Promise.all(deletePromises)
             .then(() => db.Contents.destroy({ where: {} }))
             .then(() => done())
