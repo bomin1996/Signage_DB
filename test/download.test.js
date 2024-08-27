@@ -12,6 +12,7 @@ describe('Download API', function () {
     let contentId = null;
     const originalFileName = 'test_image.jpg';
 
+
     // 테스트 전에 DB 초기화 및 파일 업로드
     before(async () => {
         await db.Contents.destroy({ where: {} });
