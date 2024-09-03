@@ -57,6 +57,7 @@ router.put('/:id', async (req, res) => {
     }
 });
 
+
 // Delete a specific group
 router.delete('/:id', async (req, res) => {
     const { id } = req.params;
